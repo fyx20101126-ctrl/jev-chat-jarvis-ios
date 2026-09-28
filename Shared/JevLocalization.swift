@@ -71,7 +71,7 @@ func localizedToneName(_ name: String, language: JevLanguage) -> String {
 func localizedProviderName(_ id: String, language: JevLanguage) -> String? {
     guard language == .english else { return nil }
     return [
-        "zhipu": "Zhipu (free glm-4-flash)", "deepseek": "DeepSeek official",
+        "zhipu": "Zhipu (glm-4-flash)", "deepseek": "DeepSeek official",
         "openrouter": "OpenRouter", "dashscope": "Alibaba Qwen", "moonshot": "Moonshot Kimi",
         "siliconflow": "SiliconFlow", "ollama": "Ollama (local network)", "custom": "Custom…",
         "typesafe": "TypeSafe direct", "vercel": "Vercel AI Gateway",

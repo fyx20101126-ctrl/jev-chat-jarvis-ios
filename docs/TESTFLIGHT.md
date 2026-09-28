@@ -103,6 +103,8 @@ plutil -p /tmp/JevJarvis.xcarchive/Products/Applications/JevJarvis.app/PlugIns/J
 
 两者必须在 `NSExtensionAttributes` 里：`RequestsOpenAccess` 缺了 → 设置里根本不显示「允许完全访问」开关；`PrimaryLanguage` 缺了 → 键盘弹起时宿主 App 直接闪退。
 
+> ⚠️ `PrimaryLanguage` 的值也有讲究：**不要用 `zh-Hans`**。听写语言未启用 `zh-Hans` 的设备（典型：英文系统、没装中文听写）上，系统 TextInput 查该键盘的听写语言拿到 nil，`setObject:forKey:` 传 nil 直接把宿主 App 崩掉（审核就是以「启动崩溃」拒的，App Store 审核设备基本都是这个环境）。**用 `en-US`**——英文听写元数据所有设备都有。崩溃签名同样是 `TIGetDefaultDictationLanguagesForKeyboardLanguage`。
+
 ---
 
 ## 2. 账号侧的一次性配置
@@ -230,7 +232,7 @@ plutil -p /tmp/JevJarvis.xcarchive/Products/Applications/JevJarvis.app/PlugIns/J
 | 上传后收到 `ITMS-91053` 邮件 | 缺隐私清单，或清单没进 Copy Bundle Resources | 见 1.2 |
 | `The bundle version must be higher than...` | build number 没递增 | 改 `CURRENT_PROJECT_VERSION` |
 | 设置里找不到「允许完全访问」开关 | `RequestsOpenAccess` 放错层级（必须在 `NSExtension` → `NSExtensionAttributes` 里） | 改 `project.yml` 后 `xcodegen generate` |
-| 点输入框、键盘弹起时宿主 App 闪退 | `NSExtensionAttributes` 缺 `PrimaryLanguage` | 同上；崩溃签名是 `TIGetDefaultDictationLanguagesForKeyboardLanguage` |
+| 点输入框、键盘弹起时宿主 App 闪退 | `NSExtensionAttributes` 缺 `PrimaryLanguage`，或 `PrimaryLanguage` 是 `zh-Hans` 且设备听写语言未启用 | 缺失→补上；是 `zh-Hans`→改 `en-US`（见 1.x 的警告）；崩溃签名是 `TIGetDefaultDictationLanguagesForKeyboardLanguage` |
 | 设置里看不到 Jev 键盘 | 装完没打开过宿主 App | 让测试者先启动一次 App |
 | 签名报 entitlement 不匹配 | App Group 建了但没勾进 App ID | 回门户把 App Group 关联到 App ID |
 | 外部测试者点链接提示不可用 | 第一个 build 还在 Beta App Review / 已过 90 天 | 看 ASC 的 TestFlight 状态 |

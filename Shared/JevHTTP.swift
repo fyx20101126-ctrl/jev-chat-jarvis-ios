@@ -14,16 +14,23 @@ enum JevError: LocalizedError {
     case cancelled
 
     var errorDescription: String? {
+        // 界面语言决定错误文案；stage 名是管线内部的中文代号，展示前先翻译
+        let en = JevStore.loadLanguage() == .english
+        let stageText: (String) -> String = { stage in
+            en ? ["判断": "Judging", "排序": "Ranking", "起草": "Drafting"][stage] ?? stage : stage
+        }
         switch self {
-        case .config(let m): return "配置问题：\(m)"
-        case .missingKey(let n): return "缺少密钥：\(n)"
-        case .http(let c, let m): return "HTTP \(c)：\(m)"
-        case .badJSON(let m): return "返回格式不对：\(m)"
-        case .emptyReply: return "模型返回了空内容"
+        case .config(let m): return en ? "Configuration issue: \(m)" : "配置问题：\(m)"
+        case .missingKey(let n): return en ? "Missing API key: \(n)" : "缺少密钥：\(n)"
+        case .http(let c, let m): return en ? "HTTP \(c): \(m)" : "HTTP \(c)：\(m)"
+        case .badJSON(let m): return en ? "Unexpected response format: \(m)" : "返回格式不对：\(m)"
+        case .emptyReply: return en ? "The model returned an empty response" : "模型返回了空内容"
         case .thinkingOnly(let m): return m
         case .timeout(let stage, let sec):
-            return String(format: "%@ 超时（%.0f 秒内没返回）", stage, sec)
-        case .cancelled: return "已取消"
+            return en
+                ? String(format: "%@ timed out (no response within %.0f s)", stageText(stage), sec)
+                : String(format: "%@ 超时（%.0f 秒内没返回）", stage, sec)
+        case .cancelled: return en ? "Cancelled" : "已取消"
         }
     }
 }

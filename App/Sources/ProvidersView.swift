@@ -207,14 +207,22 @@ private struct TestConnectionButton: View {
                 switch kind {
                 case .generation:
                     let draft = JevDraft(cfg: cfg)
-                    guard draft.isConfigured else { throw JevError.missingKey("生成层 API Key") }
+                    let keyName = store.language == .english ? "generation API key" : "生成层 API Key"
+                    guard draft.isConfigured else { throw JevError.missingKey(keyName) }
                     let text = try await draft.call(prompt: "回复两个字：收到")
-                    result = "✅ 成功，模型回了：\(text.trimmingCharacters(in: .whitespacesAndNewlines).prefix(40))"
+                    let reply = text.trimmingCharacters(in: .whitespacesAndNewlines).prefix(40)
+                    result = store.language == .english
+                        ? "✅ Success, model replied: \(reply)"
+                        : "✅ 成功，模型回了：\(reply)"
                 case .judge:
                     let judge = JevJudge(cfg: cfg)
-                    guard judge.isConfigured else { throw JevError.missingKey("判断层 API Key") }
+                    let keyName = store.language == .english ? "judge API key" : "判断层 API Key"
+                    guard judge.isConfigured else { throw JevError.missingKey(keyName) }
                     let jr = try await judge.judge(message: "这个需求你今天跟一下", context: nil)
-                    result = String(format: "✅ 成功：意图「%@」（%.0f%%），风险 %.1f/9", jr.intent, jr.confidence * 100, jr.risk)
+                    let intentText = localizedIntent(jr.intent, language: store.language)
+                    result = store.language == .english
+                        ? String(format: "✅ Success: intent \"%@\" (%.0f%%), risk %.1f/9", intentText, jr.confidence * 100, jr.risk)
+                        : String(format: "✅ 成功：意图「%@」（%.0f%%），风险 %.1f/9", jr.intent, jr.confidence * 100, jr.risk)
                 }
             } catch {
                 result = "❌ \(error.localizedDescription)"

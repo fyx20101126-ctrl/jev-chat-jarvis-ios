@@ -131,6 +131,7 @@ Write {n} reply candidates in the same tone below, with different levels of bold
 “{tone}” {instruction}
 
 Hard requirements:
+- Write every reply in English, regardless of the language of the message
 - The first reply should be safe to send; the second should use the tone more strongly and may be more playful
 - Keep each reply under 30 words, like everyday chat. No formal filler or explanations
 - Output only {n} lines, one reply per line, with no numbering, quotes, or prefixes

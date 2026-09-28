@@ -26,7 +26,7 @@ struct ProviderPreset: Identifiable, Hashable {
 
     /// DeepSeek 国内直连、智谱 glm-4-flash、OpenRouter、通义与本地 Ollama。
     static let all: [ProviderPreset] = [
-        .init(id: "zhipu", name: "智谱（glm-4-flash 免费）", kind: .openai,
+        .init(id: "zhipu", name: "智谱（glm-4-flash）", kind: .openai,
               base: "https://open.bigmodel.cn/api/paas/v4", model: "glm-4-flash", keyHint: "open.bigmodel.cn 的 API Key"),
         .init(id: "deepseek", name: "DeepSeek 官方", kind: .openai,
               base: "https://api.deepseek.com", model: "deepseek-chat", keyHint: "platform.deepseek.com 的 sk-…"),

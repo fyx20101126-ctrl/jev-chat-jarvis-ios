@@ -106,8 +106,9 @@ final class JevDraft {
             }
             let reasoning = (msg["reasoning_content"] ?? msg["reasoning"]) as? String
             if let r = reasoning, !r.isEmpty {
-                throw JevError.thinkingOnly(
-                    "「\(model)」是思考型模型：思考占满了额度，正文 0 条；请换非思考模型（如 deepseek-chat、glm-4-flash）")
+                throw JevError.thinkingOnly(JevStore.loadLanguage() == .english
+                    ? "“\(model)” is a reasoning model: its thinking consumed the budget and returned 0 replies. Switch to a non-reasoning model (e.g. deepseek-chat, glm-4-flash)"
+                    : "「\(model)」是思考型模型：思考占满了额度，正文 0 条；请换非思考模型（如 deepseek-chat、glm-4-flash）")
             }
             throw JevError.emptyReply
         case .anthropic:

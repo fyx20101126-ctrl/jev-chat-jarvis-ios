@@ -61,11 +61,15 @@ final class JevPipeline {
 
         let msg = message.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !msg.isEmpty else {
-            out.fatalError = "消息内容为空：请先在聊天里长按消息点「复制」，或把要回的话输进输入框"
+            out.fatalError = JevStore.loadLanguage() == .english
+                ? "The message is empty. Long-press the message in your chat app and tap Copy, or type it into the field"
+                : "消息内容为空：请先在聊天里长按消息点「复制」，或把要回的话输进输入框"
             return out
         }
         guard draft.isConfigured else {
-            out.fatalError = "还没配置生成层：打开 Jev Jarvis App →「模型」页填 API Key"
+            out.fatalError = JevStore.loadLanguage() == .english
+                ? "Generation layer not configured. Open Jev Jarvis → Models and add an API key"
+                : "还没配置生成层：打开 Jev Jarvis App →「模型」页填 API Key"
             return out
         }
 
@@ -97,7 +101,9 @@ final class JevPipeline {
             return (name, instruction)
         }
         guard !active.isEmpty else {
-            out.fatalError = "所有话术槽都是「不用」：打开 App →「话术」页至少启用一个"
+            out.fatalError = JevStore.loadLanguage() == .english
+                ? "Every tone slot is off. Open the app → Tones and enable at least one"
+                : "所有话术槽都是「不用」：打开 App →「话术」页至少启用一个"
             out.elapsed = Date().timeIntervalSince(start)
             return out
         }
@@ -128,7 +134,9 @@ final class JevPipeline {
         }
         out.judge = judgeResult
         if judge.isConfigured, judgeResult == nil {
-            out.notices.append("判断层没响应，已盲起草（不影响出候选）")
+            out.notices.append(JevStore.loadLanguage() == .english
+                ? "Judge layer unavailable; drafted without intent (candidates unaffected)"
+                : "判断层没响应，已盲起草（不影响出候选）")
         }
 
         // 2b) 高风险消息才用意图重写一版：盲起草在平常用消息上够用，风险高的才值得多花一次往返。
@@ -146,7 +154,9 @@ final class JevPipeline {
         }
 
         guard !drafted.isEmpty else {
-            out.fatalError = out.notices.first ?? "候选生成失败：请到 App「模型」页点「测试连接」检查配置"
+            out.fatalError = out.notices.first ?? (JevStore.loadLanguage() == .english
+                ? "Candidate generation failed. Open the app → Models and run Test connection to check your setup"
+                : "候选生成失败：请到 App「模型」页点「测试连接」检查配置")
             out.elapsed = Date().timeIntervalSince(start)
             return out
         }
@@ -169,13 +179,17 @@ final class JevPipeline {
                 if mapped.isEmpty {
                     // 排序层回传的文本和候选对不上（模型改写了标点/空格）——宁可退回未排序的全量候选，
                     // 也不能让界面变成「判断头 + 一片空白」。
-                    out.notices.append("排序结果和候选对不上，已按默认顺序展示")
+                    out.notices.append(JevStore.loadLanguage() == .english
+                        ? "Ranking didn't match the candidates; showing default order"
+                        : "排序结果和候选对不上，已按默认顺序展示")
                     out.candidates = ordered
                 } else {
                     out.candidates = mapped
                 }
             } else {
-                out.notices.append("排序失败，按默认顺序展示")
+                out.notices.append(JevStore.loadLanguage() == .english
+                    ? "Ranking failed; showing default order"
+                    : "排序失败，按默认顺序展示")
                 out.candidates = ordered
             }
         } else {
@@ -224,7 +238,11 @@ final class JevPipeline {
             for await (name, texts, err) in group {
                 done += 1
                 onStage?(.drafting(done: done, total: active.count))
-                if let err { round.notices.append("「\(name)」失败：\(err)") }
+                if let err {
+                    round.notices.append(JevStore.loadLanguage() == .english
+                        ? "“\(name)” failed: \(err)"
+                        : "「\(name)」失败：\(err)")
+                }
                 for t in texts { round.candidates.append(Candidate(text: t, tone: name, prob: nil)) }
                 // 先出一条是一条：不等其余话术、更不等排序
                 if !round.candidates.isEmpty { onPartial(round) }

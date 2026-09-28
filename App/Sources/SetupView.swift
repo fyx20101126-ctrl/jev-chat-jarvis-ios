@@ -43,16 +43,22 @@ struct SetupView: View {
     private var statusSection: some View {
         Section {
             row(icon: "keyboard", title: jevLocalized(store.language, zh: "键盘已启用", en: "Keyboard enabled"),
-                ok: kbStatus != nil && Date().timeIntervalSince(kbStatus!.lastSeen) < 90,
+                ok: kbStatus != nil,
                 detail: kbStatus.map {
-                    jevLocalized(store.language, zh: "最近使用：\(timeAgo($0.lastSeen))", en: "Last used: \(timeAgo($0.lastSeen))")
+                    jevLocalized(store.language,
+                                 zh: "最近使用：\(timeAgo($0.lastSeen))。若你已移除键盘，这里不会自动变灰——重新添加后在输入框唤起一次即可刷新",
+                                 en: "Last used: \(timeAgo($0.lastSeen)). If you removed the keyboard this won't turn gray by itself — re-add it and open it once in any text field to refresh")
                 } ?? jevLocalized(store.language, zh: "还没检测到键盘被唤起过（在任意输入框里切换到 Jev 键盘即可）", en: "The keyboard has not been opened yet. Switch to Jev in any text field."))
 
             row(icon: "lock.open", title: jevLocalized(store.language, zh: "允许完全访问", en: "Full Access"),
                 ok: kbStatus?.hasFullAccess == true,
-                detail: kbStatus?.hasFullAccess == true
-                    ? jevLocalized(store.language, zh: "已开启：键盘可以联网、读剪贴板", en: "On: the keyboard can use the network and clipboard")
-                    : jevLocalized(store.language, zh: "未开启：键盘无法联网和读剪贴板，也不会出候选", en: "Off: the keyboard cannot use the network or clipboard"))
+                detail: kbStatus == nil
+                    ? jevLocalized(store.language,
+                                   zh: "还没有键盘状态：先在任意输入框切到 Jev 键盘唤起一次，这里才会显示真实开关状态",
+                                   en: "No keyboard state yet. Switch to the Jev keyboard in any text field once — this row then shows the real switch state.")
+                    : (kbStatus?.hasFullAccess == true
+                        ? jevLocalized(store.language, zh: "已开启：键盘可以联网、读剪贴板", en: "On: the keyboard can use the network and clipboard")
+                        : jevLocalized(store.language, zh: "未开启：键盘无法联网和读剪贴板，也不会出候选", en: "Off: the keyboard cannot use the network or clipboard")))
 
             row(icon: "externaldrive.connected.to.line.below", title: jevLocalized(store.language, zh: "App Group 共享", en: "App Group sharing"),
                 ok: groupOK, detail: groupOK
@@ -84,7 +90,7 @@ struct SetupView: View {
         Section(jevLocalized(store.language, zh: "三步启用", en: "Set up in three steps")) {
             step(1, jevLocalized(store.language, zh: "设置 → 通用 → 键盘 → 键盘 → 添加新键盘 → Jev 键盘", en: "Settings → General → Keyboard → Keyboards → Add New Keyboard → Jev Keyboard"))
             step(2, jevLocalized(store.language, zh: "回到「键盘」列表，点 Jev 键盘 → 打开「允许完全访问」", en: "Return to Keyboards, select Jev Keyboard, and turn on Full Access"))
-            step(3, jevLocalized(store.language, zh: "去「模型」页填一个 API Key（智谱 glm-4-flash 免费），然后在聊天 App 中使用：长按消息 → 复制 → 键盘上点「分析剪贴板」", en: "Add an API key on Models, then in any chat app long-press a message, copy it, and tap Analyze Clipboard"))
+            step(3, jevLocalized(store.language, zh: "去「模型」页填一个 API Key（如智谱 glm-4-flash），然后在聊天 App 中使用：长按消息 → 复制 → 键盘上点「分析剪贴板」", en: "Add an API key on Models (e.g. Zhipu glm-4-flash), then in any chat app long-press a message, copy it, and tap Analyze Clipboard"))
         }
     }
 

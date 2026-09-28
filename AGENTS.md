@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-`App/Sources/` contains the SwiftUI configuration and playground screens; `Keyboard/Sources/` contains the UIKit keyboard extension. `Shared/` holds code used by both targets, including models, prompts, networking, and the analysis pipeline. Keep shared behavior there so the app and keyboard stay consistent. UI automation is in `UITests/`; `tools/PromptCheck/` contains shared-logic regression checks. App icons and other assets are under `App/Assets.xcassets/`. Product and setup documentation lives in `README.md`, `readme-us.md`, and `docs/`.
+`App/Sources/` contains the SwiftUI configuration and playground screens; `Keyboard/Sources/` contains the UIKit keyboard extension. `Shared/` holds code used by both targets, including models, prompts, networking, and the analysis pipeline. Keep shared behavior there so the app and keyboard stay consistent. UI automation is in `UITests/`; `tools/PromptCheck/` contains shared-logic regression checks. App icons and other assets are under `App/Assets.xcassets/`. Product and setup documentation lives in `README.md`, `README.en.md`, and `docs/`.
 
 ## Build, Test, and Development Commands
 

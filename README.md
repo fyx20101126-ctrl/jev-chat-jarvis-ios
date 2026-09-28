@@ -1,6 +1,11 @@
 # jev-chat-jarvis（iOS · 键盘版）
 
-English documentation: [`readme-us.md`](readme-us.md)。App 与键盘支持中文 / English，可在 App「开始」页切换。
+![Swift](https://img.shields.io/badge/Swift-5+-F05138.svg)
+![Platform](https://img.shields.io/badge/platform-iOS%2016+-lightgrey.svg)
+![Version](https://img.shields.io/badge/version-0.1.0-orange.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+
+中文 | [English](readme-us.md)
 
 聊天 App 收到一条消息 → 在**当前聊天 App 的键盘上**直接看到这句话的**意图、风险**和**候选回复**，点一下就进输入框。
 
@@ -76,8 +81,10 @@ swiftc -o /tmp/jevcheck tools/PromptCheck/main.swift Shared/*.swift && /tmp/jevc
 
 ```
 ├── project.yml            # xcodegen 工程定义（改完跑 `xcodegen generate`）
+├── AGENTS.md              # 仓库协作指南（代码风格 / 提交规范 / 安全红线）
 ├── Shared/                # App 与键盘共用的单一口径层（仅 Foundation，无 UI）
 │   ├── JevModel.swift     # 配置模型 + App Group 存储
+│   ├── JevLocalization.swift # 中英文案与意图/风险/行动的本地化映射
 │   ├── JevPrompts.swift   # 意图/风险/话术/prompt/清洗
 │   ├── JevHTTP.swift      # 带总预算的 POST（429/5xx 退避重试）
 │   ├── JevJudge.swift     # TypeSafe systemone：判断 + 排序
@@ -86,6 +93,8 @@ swiftc -o /tmp/jevcheck tools/PromptCheck/main.swift Shared/*.swift && /tmp/jevc
 ├── App/Sources/           # SwiftUI：开始（键盘状态）/ 模型 / 话术 / 试一试
 ├── App/Assets.xcassets/   # AppIcon（改设计见 tools/MakeAppIcon，别手改 PNG）
 ├── Keyboard/Sources/      # UIKit 键盘扩展（内存 <60MB 约束下的纯系统控件）
+├── UITests/               # XCUITest：冷启动/Tab 遍历/键盘启用回归 + 上架截图采集
+├── marketing/app-store-upload/  # App Store 上架截图（source 原图 + npm 生成脚本）
 └── tools/
     ├── PromptCheck/       # 口径回归
     └── MakeAppIcon/       # 画 AppIcon：swiftc -O -o /tmp/makeappicon tools/MakeAppIcon/main.swift && /tmp/makeappicon App/Assets.xcassets/AppIcon.appiconset
@@ -116,7 +125,7 @@ xcodebuild -project JevJarvis.xcodeproj -target JevJarvis -sdk iphoneos \
 
 ## 许可
 
-Copyright © 2026 eatmoreduck 与 jev-chat 贡献者。代码以 [MIT](LICENSE) 协议开源，另见 [NOTICE](NOTICE)。
+Copyright © 2026 eatmoreduck、Xlff 与 jev-chat 贡献者。代码以 [MIT](LICENSE) 协议开源，另见 [NOTICE](NOTICE)。
 
 - **可以商用**：个人和公司都可以使用、修改、再分发，不需要付费或事先授权。
 - **必须注明出处**：分发或商用时保留 `LICENSE` 与 `NOTICE`，并写明来源。

@@ -1,0 +1,49 @@
+name: Build iOS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build
+        run: |
+          xcodebuild \
+            -project JevJarvis.xcodeproj \
+            -target JevJarvis \
+            -sdk iphoneos \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+
+      - name: Package app
+        run: |
+          mkdir -p output
+          APP_PATH=$(find "$HOME/Library/Developer/Xcode/DerivedData" \
+            -path "*/Build/Products/Release-iphoneos/JevJarvis.app" \
+            -type d -print -quit)
+
+          if [ -z "$APP_PATH" ]; then
+            echo "JevJarvis.app not found"
+            exit 1
+          fi
+
+          cp -R "$APP_PATH" output/
+          cd output
+          zip -r JevJarvis-unsigned.zip JevJarvis.app
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: JevJarvis-iOS
+          path: output/JevJarvis-unsigned.zip
